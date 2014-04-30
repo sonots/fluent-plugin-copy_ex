@@ -7,10 +7,10 @@ module Fluent
     def initialize
       super
       @outputs = []
-      @ignore_failures = []
+      @ignore_errors = []
     end
 
-    attr_reader :outputs, :ignore_failures
+    attr_reader :outputs, :ignore_errors
 
     def configure(conf)
       super
@@ -27,7 +27,7 @@ module Fluent
         output.configure(e)
         @outputs << output
 
-        @ignore_failures << (e.arg == "ignore_failure")
+        @ignore_errors << (e.arg == "ignore_error")
       }
     end
 
@@ -58,7 +58,7 @@ module Fluent
         begin
           @outputs[idx].emit(tag, _es, NullOutputChain.instance)
         rescue => e
-          if @ignore_failures[idx]
+          if @ignore_errors[idx]
             log.error :error_class => e.class, :error => e.message
           else
             raise e

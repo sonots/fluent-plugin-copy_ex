@@ -20,12 +20,12 @@ class CopyExOutputTest < Test::Unit::TestCase
     </store>
   ]
 
-  IGNORE_FAILURE_CONFIG = %[
-    <store ignore_failure>
+  IGNORE_ERROR_CONFIG = %[
+    <store ignore_error>
       type test
       name c0
     </store>
-    <store ignore_failure>
+    <store ignore_error>
       type test
       name c1
     </store>
@@ -52,15 +52,15 @@ class CopyExOutputTest < Test::Unit::TestCase
     assert_equal "c2", outputs[2].name
   end
 
-  def test_configure_ignore_failure
-    d = create_driver(IGNORE_FAILURE_CONFIG)
+  def test_configure_ignore_error
+    d = create_driver(IGNORE_ERROR_CONFIG)
 
     outputs = d.instance.outputs
-    ignore_failures = d.instance.ignore_failures
-    assert_equal outputs.size, ignore_failures.size
-    assert_equal true,  ignore_failures[0]
-    assert_equal true,  ignore_failures[1]
-    assert_equal false, ignore_failures[2]
+    ignore_errors = d.instance.ignore_errors
+    assert_equal outputs.size, ignore_errors.size
+    assert_equal true,  ignore_errors[0]
+    assert_equal true,  ignore_errors[1]
+    assert_equal false, ignore_errors[2]
   end
 
   def test_emit
@@ -193,8 +193,8 @@ deep_copy true
     ], d.instance.outputs.map{ |o| o.events }
   end
 
-  def test_ignore_failure
-    d = create_driver(IGNORE_FAILURE_CONFIG)
+  def test_ignore_error
+    d = create_driver(IGNORE_ERROR_CONFIG)
 
     # override to raise an error
     d.instance.outputs.first.define_singleton_method(:emit) do |tag, es, chain|

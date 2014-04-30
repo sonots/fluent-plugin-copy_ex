@@ -1,27 +1,42 @@
-# fluent-plugin-tagged_copy
+# fluent-plugin-copy_ex
 
 ## About
 
-Fluentd out\_copy extension to do tagging before passing to chained plugins
+Fluentd out\_copy extension
 
-## Examples
+## What is this for?
+
+Think of `out_copy` configuration as folloings:
 
 ```apache
 <match **>
-  type tagged_copy
+  type copy
   <store>
-    <filter>
-       add_tag_prefix foo
-       remove_tag_prefix bar
-    </filter>
-    type stdout
+    type plugin1
   </store>
-
   <store>
-    <filter>
-       tag blah
-    </filter>
-    type stdout
+    type plugin2
+  </store>
+</match>
+```
+
+In the current Fluentd, when plugin1 raises an error internally, the chain is broken and the plugin2 is not executed. 
+
+The `out_copy_ex` supplies `ignore_error` option so that it will not break the chain and the plugin2 is executed. 
+
+See https://github.com/fluent/fluentd/pull/303 for discussions. 
+
+
+## Configuration
+
+```apache
+<match **>
+  type copy_ex
+  <store ignore_error>
+    type plugin1
+  </store>
+  <store ignore_error>
+    type plugin2
   </store>
 </match>
 ```
@@ -29,28 +44,6 @@ Fluentd out\_copy extension to do tagging before passing to chained plugins
 ## Parameters
 
 Basically same with out\_copy plugin. See http://docs.fluentd.org/articles/out_copy
-
-But, you can specify `filter` directive with following options
-
-* tag
-
-    The tag name
-
-* add_tag_prefix
-
-    Add tag prefix for output message
-
-* remove_tag_prefix
-
-    Remove tag prefix for output message
-    
-* add_tag_suffix
-
-    Add tag suffix for output message
-
-* remove_tag_suffix
-
-    Remove tag suffix for output message
     
 ## Contributing
 
