@@ -4,7 +4,7 @@ Fluentd out\_copy extension
 
 ## What is this for?
 
-Think of `out_copy` configuration as folloings:
+Think of `out_copy` configuration as followings:
 
 ```apache
 <match **>
