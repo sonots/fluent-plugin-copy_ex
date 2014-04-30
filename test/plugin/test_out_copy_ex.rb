@@ -1,6 +1,6 @@
 require 'fluent/test'
 
-class CopyOutputTest < Test::Unit::TestCase
+class CopyExOutputTest < Test::Unit::TestCase
   def setup
     Fluent::Test.setup
   end
@@ -21,7 +21,7 @@ class CopyOutputTest < Test::Unit::TestCase
   ]
 
   def create_driver(conf = CONFIG)
-    Fluent::Test::OutputTestDriver.new(Fluent::CopyOutput).configure(conf)
+    Fluent::Test::OutputTestDriver.new(Fluent::CopyExOutput).configure(conf)
   end
 
   def test_configure
@@ -53,7 +53,7 @@ class CopyOutputTest < Test::Unit::TestCase
   end
 
   def test_msgpack_es_emit_bug
-    d = Fluent::Test::OutputTestDriver.new(Fluent::CopyOutput)
+    d = Fluent::Test::OutputTestDriver.new(Fluent::CopyExOutput)
 
     outputs = %w(p1 p2).map do |pname|
       p = Fluent::Plugin.new_output('test')
@@ -113,7 +113,7 @@ deep_copy true
 
     outputs = [output1, output2]
 
-    d = Fluent::Test::OutputTestDriver.new(Fluent::CopyOutput)
+    d = Fluent::Test::OutputTestDriver.new(Fluent::CopyExOutput)
     d = d.configure(deep_copy_config) if is_deep_copy
     d.instance.instance_eval { @outputs = outputs }
     d
