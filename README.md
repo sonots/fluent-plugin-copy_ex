@@ -1,7 +1,5 @@
 # fluent-plugin-copy_ex
 
-## About
-
 Fluentd out\_copy extension
 
 ## What is this for?
