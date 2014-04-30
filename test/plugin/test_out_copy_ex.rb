@@ -20,6 +20,21 @@ class CopyExOutputTest < Test::Unit::TestCase
     </store>
   ]
 
+  IGNORE_FAILURE_CONFIG = %[
+    <store ignore_failure>
+      type test
+      name c0
+    </store>
+    <store ignore_failure>
+      type test
+      name c1
+    </store>
+    <store>
+      type test
+      name c2
+    </store>
+  ]
+
   def create_driver(conf = CONFIG)
     Fluent::Test::OutputTestDriver.new(Fluent::CopyExOutput).configure(conf)
   end
@@ -35,6 +50,17 @@ class CopyExOutputTest < Test::Unit::TestCase
     assert_equal "c0", outputs[0].name
     assert_equal "c1", outputs[1].name
     assert_equal "c2", outputs[2].name
+  end
+
+  def test_configure_ignore_failure
+    d = create_driver(IGNORE_FAILURE_CONFIG)
+
+    outputs = d.instance.outputs
+    ignore_failures = d.instance.ignore_failures
+    assert_equal outputs.size, ignore_failures.size
+    assert_equal true,  ignore_failures[0]
+    assert_equal true,  ignore_failures[1]
+    assert_equal false, ignore_failures[2]
   end
 
   def test_emit
@@ -165,6 +191,18 @@ deep_copy true
       [[time, {"a"=>1, "foo"=>"bar"}], [time, {"b"=>2, "foo"=>"bar"}]],
       [[time, {"a"=>1}], [time, {"b"=>2}]]
     ], d.instance.outputs.map{ |o| o.events }
+  end
+
+  def test_ignore_failure
+    d = create_driver(IGNORE_FAILURE_CONFIG)
+
+    # override to raise an error
+    d.instance.outputs.first.define_singleton_method(:emit) do |tag, es, chain|
+      raise ArgumentError, 'Failed'
+    end
+
+    time = Time.parse("2011-01-02 13:14:15 UTC").to_i
+    assert_nothing_raised { d.emit({"a"=>1}, time) }
   end
 end
 

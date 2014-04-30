@@ -10,7 +10,7 @@ module Fluent
       @ignore_failures = []
     end
 
-    attr_reader :outputs
+    attr_reader :outputs, :ignore_failures
 
     def configure(conf)
       super
