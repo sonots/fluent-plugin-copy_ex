@@ -1,6 +1,17 @@
 require 'fluent/test'
 
 class CopyExOutputTest < Test::Unit::TestCase
+  class << self
+    def startup
+      $LOAD_PATH.unshift File.expand_path(File.join(File.dirname(__FILE__), '..', 'scripts'))
+      require 'fluent/plugin/out_test'
+    end
+
+    def shutdown
+      $LOAD_PATH.shift
+    end
+  end
+
   def setup
     Fluent::Test.setup
   end
@@ -16,6 +27,21 @@ class CopyExOutputTest < Test::Unit::TestCase
     </store>
     <store>
       type test
+      name c2
+    </store>
+  ]
+
+  ATMARK_TYPE_CONFIG = %[
+    <store>
+      @type test
+      name c0
+    </store>
+    <store>
+      @type test
+      name c1
+    </store>
+    <store>
+      @type test
       name c2
     </store>
   ]
@@ -36,11 +62,24 @@ class CopyExOutputTest < Test::Unit::TestCase
   ]
 
   def create_driver(conf = CONFIG)
-    Fluent::Test::OutputTestDriver.new(Fluent::CopyExOutput).configure(conf)
+    Fluent::Test::OutputTestDriver.new(Fluent::CopyExOutput).configure(conf, true)
   end
 
   def test_configure
     d = create_driver
+
+    outputs = d.instance.outputs
+    assert_equal 3, outputs.size
+    assert_equal Fluent::TestOutput, outputs[0].class
+    assert_equal Fluent::TestOutput, outputs[1].class
+    assert_equal Fluent::TestOutput, outputs[2].class
+    assert_equal "c0", outputs[0].name
+    assert_equal "c1", outputs[1].name
+    assert_equal "c2", outputs[2].name
+  end
+
+  def test_configure_atmark_type
+    d = create_driver(ATMARK_TYPE_CONFIG)
 
     outputs = d.instance.outputs
     assert_equal 3, outputs.size
