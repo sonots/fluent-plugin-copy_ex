@@ -1,6 +1,18 @@
 require 'fluent/test'
 
 class CopyExOutputTest < Test::Unit::TestCase
+  class << self
+    def startup
+      spec = Gem::Specification.find { |s| s.name == 'fluentd' }
+      $LOAD_PATH.unshift File.join(spec.full_gem_path, 'test', 'scripts')
+      require 'fluent/plugin/out_test'
+    end
+
+    def shutdown
+      $LOAD_PATH.shift
+    end
+  end
+
   def setup
     Fluent::Test.setup
   end
