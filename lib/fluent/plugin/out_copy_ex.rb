@@ -1,3 +1,5 @@
+require 'fluent/output'
+
 module Fluent
   class CopyExOutput < MultiOutput
     Plugin.register_output('copy_ex', self)
@@ -17,9 +19,9 @@ module Fluent
       conf.elements.select {|e|
         e.name == 'store'
       }.each {|e|
-        type = e['type']
+        type = e['@type'] || e['type']
         unless type
-          raise ConfigError, "Missing 'type' parameter on <store> directive"
+          raise ConfigError, "Missing '@type' parameter on <store> directive"
         end
         log.debug "adding store type=#{type.dump}"
 
