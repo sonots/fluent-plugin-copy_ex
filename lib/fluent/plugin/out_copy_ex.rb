@@ -10,6 +10,7 @@ module Fluent
       super
       @outputs = []
       @ignore_errors = []
+      @emit_procs = []
     end
 
     attr_reader :outputs, :ignore_errors
@@ -27,6 +28,12 @@ module Fluent
 
         output = Plugin.new_output(type)
         output.configure(e)
+        emit_proc = if output.respond_to?(:emit_events)
+                      Proc.new {|output, tag, es, _chain| output.emit_events(tag, es)}
+                    else
+                      Proc.new {|output, tag, es, _chain| output.emit(tag, es, NullOutputChain.instance)}
+                    end
+        @emit_procs << emit_proc
         @outputs << output
 
         @ignore_errors << (e.arg == "ignore_error")
@@ -58,7 +65,7 @@ module Fluent
       @outputs.each_index do |idx|
         _es = @deep_copy ? es.dup : es
         begin
-          @outputs[idx].emit(tag, _es, NullOutputChain.instance)
+          @emit_procs[idx].call(@outputs[idx], tag, _es, NullOutputChain.instance)
         rescue => e
           if @ignore_errors[idx]
             log.error :error_class => e.class, :error => e.message
