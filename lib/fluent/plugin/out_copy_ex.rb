@@ -58,7 +58,11 @@ module Fluent
       @outputs.each_index do |idx|
         _es = @deep_copy ? es.dup : es
         begin
-          @outputs[idx].emit(tag, _es, NullOutputChain.instance)
+          if @outputs[idx].respond_to?(:emit_events)
+            @outputs[idx].emit_events(tag, _es)
+          else
+            @outputs[idx].emit(tag, _es, NullOutputChain.instance)
+          end
         rescue => e
           if @ignore_errors[idx]
             log.error :error_class => e.class, :error => e.message
