@@ -6,6 +6,7 @@ Rake::TestTask.new(:test) do |test|
   test.libs << 'lib' << 'test'
   test.pattern = 'test/**/*.rb'
   test.verbose = true
+  test.warning = false
 end
 task :default => :test
 
