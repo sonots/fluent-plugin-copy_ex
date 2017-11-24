@@ -1,6 +1,7 @@
 ## 0.1.0 (2017-11-25)
 
 * Fix v0.14 support was not working well
+* Dropped v0.10 support
 
 ## 0.0.3 (2017-02-06)
 
