@@ -1,3 +1,5 @@
+require_relative "helper"
+
 require 'fluent/version'
 major, minor, patch = Fluent::VERSION.split('.').map(&:to_i)
 if major > 0 || (major == 0 && minor >= 14)
