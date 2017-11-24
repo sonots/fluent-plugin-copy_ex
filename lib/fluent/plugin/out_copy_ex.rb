@@ -37,7 +37,7 @@ module Fluent::Plugin
       outputs.each_with_index do |output, idx|
         _es = @deep_copy ? es.dup : es
         begin
-          output.emit_events(tag, @deep_copy ? es.dup : es)
+          output.emit_events(tag, _es)
         rescue => e
           if @ignore_errors[idx]
             log.error :error_class => e.class, :error => e.message
