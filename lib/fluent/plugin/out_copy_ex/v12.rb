@@ -1,8 +1,10 @@
 require 'fluent/plugin/out_copy'
 
 module Fluent
-  class CopyOutputEx < CopyOutput
+  class CopyExOutput < CopyOutput
     Plugin.register_output('copy_ex', self)
+
+    attr_reader :ignore_errors
 
     def initialize
       super
