@@ -127,7 +127,7 @@ class CopyExOutputTest < Test::Unit::TestCase
       </store>
     ]
 
-    d = Fluent::Test::Driver::MultiOutput.new(Fluent::Plugin::CopyOutput).configure(config)
+    d = Fluent::Test::Driver::MultiOutput.new(Fluent::Plugin::CopyExOutput).configure(config)
     d.instance.outputs[0].define_singleton_method(:process) do |tag, es|
       es.each do |time, record|
         record['foo'] = 'bar'
